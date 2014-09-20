@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!-- 
+DMJsJvm - Small and smart javascript jvm that run java bytecode
+
+Copyright (C) 2014 Davide Montesin <d@vide.bz> - Bolzano/Bozen - Italy
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>
+-->
+<html>
+<head>
+<title>DMJsJvm Hello World example</title>
+<script type="text/javascript" src="bytecode2jsservlet"></script>
+<style>
+
+pre
+{
+   background:#DDDDDD;
+   padding:10px;
+}
+</style>
+</head>
+<body>
+<h1>DMJsJvm Hello World example</h1>
+    Open the javascript console. There is a log entry: "Hello World!" (page refresh may be required if console was not already open)
+    <p>
+    The java source code:
+    <pre>
+package bz.davide.dmjsjvm_demo;
+
+public class HelloWorld
+{
+   public static void main(String[] args)
+   {
+      System.out.println("Hello World!");
+   }
+}
+    </pre>
+    ... and the java bytecode converted to javascript:
+    <pre>
+...
+...
+switch (PC)
+{
+   case 0: PC = 0; /* 0xB2   */
+           operand_stack.push(Class_forName('java/lang/<b>System</b>').static_fields['<b>out</b>'])
+   case 3: PC = 3; /* 0x12  ldc         */ var text = <b>'Hello World!'</b>
+           var javaLangString = Class_forName('java/lang/String')['newInstance()Ljava/lang/Object;']()
+           javaLangString.value = text
+           operand_stack.push(javaLangString)
+   case 5: PC = 5; /* 0xB6   */
+           var param_1 =  operand_stack.pop()
+           var obj = operand_stack.pop()
+           var result = obj['<b>println</b>(Ljava/lang/String;)V'](param_1)
+   case 8: PC = 8; /* 0xB1  return      */ return 
+}    
+...
+...
+    </pre>
+    To see all the bytecode of this example click <a href="bytecode2jsservlet">bytecode2jsservlet</a>
+	<script type="text/javascript">
+	    bz_davide_JVM.runMainMethodOf('bz/davide/dmjsjvm_demo/HelloWorld');
+	</script>
+</body>
+</html>

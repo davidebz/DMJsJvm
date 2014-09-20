@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+DMJsJvm - Small and smart javascript jvm that run java bytecode
+
+Copyright (C) 2014 Davide Montesin <d@vide.bz> - Bolzano/Bozen - Italy
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>
+-->
+<web-app
+   version="3.0"
+   xmlns="http://java.sun.com/xml/ns/javaee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+   <servlet>
+      <servlet-name>Bytecode2JsServlet</servlet-name>
+      <servlet-class>bz.davide.dmjsjvm.Bytecode2JsServlet</servlet-class>
+      <init-param>
+         <param-name>mainClass</param-name>
+         <param-value>bz.davide.dmjsjvm_demo.HelloWorld</param-value>
+      </init-param>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>Bytecode2JsServlet</servlet-name>
+      <url-pattern>/bytecode2jsservlet</url-pattern>
+   </servlet-mapping>
+
+   <welcome-file-list>
+      <welcome-file>index.html</welcome-file>
+   </welcome-file-list>
+
+</web-app>
