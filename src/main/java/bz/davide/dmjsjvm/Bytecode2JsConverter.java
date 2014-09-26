@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.ConstantClass;
@@ -45,7 +46,7 @@ public class Bytecode2JsConverter
          @Override
          public boolean add(String e)
          {
-            if (e.startsWith("bz/davide/dmjsjvm/system/java/"))
+            if (e.startsWith("bz/davide/dmjsjvm/system/"))
             {
                throw new IllegalStateException("Wrong package");
             }
@@ -114,6 +115,21 @@ public class Bytecode2JsConverter
       print.println("       superName : '" + superClassName + "',");
       toConvertClasses.add(superClassName);
       print.println("       __className : 'java/lang/Class',");
+
+      JavaClass[] interfaces = classBytecode.getInterfaces();
+      print.print("       interfaces : [ ");
+      for (int i = 0; i < interfaces.length; i++)
+      {
+         JavaClass interf = interfaces[i];
+         String interfaceName = ((ConstantClass) classBytecode.getConstantPool().getConstant(interf.getClassNameIndex())).getBytes(classBytecode.getConstantPool());
+         print.print(interfaceName);
+         if (i < interfaces.length - 1)
+         {
+            print.print(", ");
+         }
+      }
+      print.println("],");
+
       convertFieldBytecode2Js(classBytecode, print, toConvertClasses);
       convertMethodBytecode2Js(binaryName, classBytecode, print, toConvertClasses, staticInitClasses);
 
@@ -218,16 +234,37 @@ public class Bytecode2JsConverter
                        + "' : {isStatic: "
                        + method.isStatic()
                        + ", code : function() {");
-         if (!method.isNative())
+
+         String javascriptNativeCode = null;
+         AnnotationEntry[] annotationEntries = method.getAnnotationEntries();
+         if (annotationEntries.length > 0)
+         {
+            for (AnnotationEntry annotationEntry : annotationEntries)
+            {
+               String type = annotationEntry.getAnnotationType();
+               if (type.equals("Lbz/davide/dmjsjvm/NativeJavascriptCode;"))
+               {
+                  javascriptNativeCode = annotationEntry.getElementValuePairs()[0].getValue().stringifyValue();
+               }
+            }
+         }
+
+         if (javascriptNativeCode == null)
          {
             convertMethodBodyBytecode2Js(classBytecode, method, print, toConvertClasses);
          }
          else
          {
-            // TODO better check
-            String jscode = method.getAnnotationEntries()[0].getElementValuePairs()[0].getValue().stringifyValue();
-            print.println(jscode);
+            print.println(javascriptNativeCode);
          }
+
+         String returnType = method.getReturnType().getSignature();
+         if (returnType.startsWith("L") && returnType.endsWith(";"))
+         {
+            String returnClass = returnType.substring(1).substring(0, returnType.length() - 2);
+            toConvertClasses.add(returnClass);
+         }
+
          if (i < notStatic.size() - 1)
          {
             print.println("         }},");
@@ -263,16 +300,37 @@ public class Bytecode2JsConverter
                        + "' : { isStatic: "
                        + method.isStatic()
                        + ", code : function() {");
-         if (!method.isNative())
+
+         String javascriptNativeCode = null;
+         AnnotationEntry[] annotationEntries = method.getAnnotationEntries();
+         if (annotationEntries.length > 0)
+         {
+            for (AnnotationEntry annotationEntry : annotationEntries)
+            {
+               String type = annotationEntry.getAnnotationType();
+               if (type.equals("Lbz/davide/dmjsjvm/NativeJavascriptCode;"))
+               {
+                  javascriptNativeCode = annotationEntry.getElementValuePairs()[0].getValue().stringifyValue();
+               }
+            }
+         }
+
+         if (javascriptNativeCode == null)
          {
             convertMethodBodyBytecode2Js(classBytecode, method, print, toConvertClasses);
          }
          else
          {
-            // TODO better check
-            String jscode = method.getAnnotationEntries()[0].getElementValuePairs()[0].getValue().stringifyValue();
-            print.println(jscode);
+            print.println(javascriptNativeCode);
          }
+
+         String returnType = method.getReturnType().getSignature();
+         if (returnType.startsWith("L") && returnType.endsWith(";"))
+         {
+            String returnClass = returnType.substring(1).substring(0, returnType.length() - 2);
+            toConvertClasses.add(returnClass);
+         }
+
          if (i < isStatic.size() - 1)
          {
             print.println("         }},");

@@ -29,6 +29,13 @@ bz_davide_JVM = new function()
 		return clazz
 	}
 	
+	function Class_instanceOf(obj, className)
+	{
+		// TODO check all superclasses and interfaces too
+		// TODO jvm internal value of boolean are int? (compare for example?)
+		return obj.__className === className;
+	}
+	
 	this.runMainMethodOf = function(className)
 	{
 		var clazz = Class_forName(className)
@@ -77,7 +84,18 @@ bz_davide_JVM = new function()
 		   'getDeclaredFields()[': {code: function(_this) {
 			   return _this.fields;
 		   }}
+		},
+		
+		static_methods : {
+			'forName(Ljava/lang/String;)Ljava/lang/Class;' : { code: function() {  
+				   var binaryName = arguments[0].value;
+				   binaryName = binaryName.replace(new RegExp('\\.', 'g'), '/');
+				   var clazz = Class_forName(binaryName)
+				   return clazz;
+			   }}
 		}
+		
+		
 	}
 	
 	var allocateObjectFields = function(clazz, obj)

@@ -20,16 +20,26 @@ along with this program. If not, see <http://www.gnu.org/licenses/>
 package bz.davide.dmjsjvm.system.java.lang;
 
 import bz.davide.dmjsjvm.NativeJavascriptCode;
-import bz.davide.dmjsjvm.system.java.io.PrintStream;
 
-public class SystemOut extends PrintStream
+public class StringBuilder
 {
-   @NativeJavascriptCode(src = "console.log(arguments[0].value);")
-   public native void println(java.lang.String text);
 
-   @NativeJavascriptCode(src = "console.log(arguments[0]);")
-   public native void println(int num);
+   StringBuilder(java.lang.String init)
+   {
+      this.initNativeString(init);
+   }
 
-   @NativeJavascriptCode(src = "console.log(arguments[0]);")
-   public native void println(Object obj);
+   @NativeJavascriptCode(src = "this.value += arguments[0]; return this;")
+   public native java.lang.StringBuilder append(int i);
+
+   @NativeJavascriptCode(src = "this.value += arguments[0].value; return this;")
+   public native java.lang.StringBuilder append(String s);
+
+   @NativeJavascriptCode(src = "this.value = arguments[0].value")
+   public native void initNativeString(java.lang.String val);
+
+   @Override
+   @NativeJavascriptCode(src = "var javaLangString = Class_forName('java/lang/String')['newInstance()Ljava/lang/Object;'](); javaLangString.value = this.value; return javaLangString;")
+   public native java.lang.String toString();
+
 }

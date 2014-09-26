@@ -212,6 +212,17 @@ public class Bytecode
                              + (i - 2 + signed32)
                              + "; continue;}");
             break;
+            case 0xa2: // if_icmpge
+               i++;
+               index1 = code[i] & 0xff;
+               i++;
+               index2 = code[i] & 0xff;
+               signed32 = (short) (index1 << 8 | index2);
+               print.println(" if_icmpge */ var val2 = operand_stack.pop(); var val1 = operand_stack.pop(); if (val1 >= val2) { PC = "
+                             + (i - 2 + signed32)
+                             + "; continue;}");
+            break;
+
             case 0xa1: // if_icmplt
                i++;
                index1 = code[i] & 0xff;
@@ -316,6 +327,7 @@ public class Bytecode
             case 0xB6: // invokeVirtual
             case 0xB7: // invokeSpecial
             case 0xB8: // invokeStatic
+            case 0xB9: // invokeInterface
                MethodInvokationData methodInvokationData = MethodInvokationData.parse(code, i, constantPool);
                methodInvokationData.ofClass = reverseAdjustSystemClassName(methodInvokationData.ofClass);
                i += 2;
@@ -326,6 +338,10 @@ public class Bytecode
                   break;
                   case 0xB8: // invokeStatic
                      print.print("invokeStatic");
+                  break;
+                  case 0xB9: // invokeInterface
+                     print.print("invokeInterface");
+                     i += 2; // remove count , 0
                   break;
                }
                print.println("  */");
@@ -388,6 +404,18 @@ public class Bytecode
                index2 = code[i] & 0xff;
                signed32 = (short) (index1 << 8 | index2);
             // TODO implement check with exception
+            break;
+            case 0xC1: // instanceof
+               i++;
+               index1 = code[i] & 0xff;
+               i++;
+               index2 = code[i] & 0xff;
+               index = index1 << 8 | index2;
+               constantClass = (ConstantClass) constantPool.getConstant(index);
+               String instanceofName = constantClass.getBytes(constantPool);
+               print.println(" instanceof   */      var obj = operand_stack.pop()");
+               print.println("                      var result = Class_instanceOf(obj,'" + instanceofName + "')");
+               print.println("           operand_stack.push(result)");
             break;
 
             default:
