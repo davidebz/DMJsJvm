@@ -116,6 +116,8 @@ public class Bytecode2JsConverter
       toConvertClasses.add(superClassName);
       print.println("       __className : 'java/lang/Class',");
 
+      /*
+      // TODO this code throw an Exception with HelloDOMParser : org.apache.bcel.classfile.ClassFormatException: Invalid constant pool reference: 87. Constant pool size is: 67
       JavaClass[] interfaces = classBytecode.getInterfaces();
       print.print("       interfaces : [ ");
       for (int i = 0; i < interfaces.length; i++)
@@ -129,6 +131,7 @@ public class Bytecode2JsConverter
          }
       }
       print.println("],");
+      */
 
       convertFieldBytecode2Js(classBytecode, print, toConvertClasses);
       convertMethodBytecode2Js(binaryName, classBytecode, print, toConvertClasses, staticInitClasses);
@@ -370,6 +373,13 @@ public class Bytecode2JsConverter
                for (LocalVariable localVariable : method.getLocalVariableTable().getLocalVariableTable())
                {
                   methodParametersVariablesArr.add(new FixedLocalVariable(localVariable.getName()));
+                  String varSignature = localVariable.getSignature();
+                  if (varSignature.startsWith("L") && varSignature.endsWith(";"))
+                  {
+                     String toAdd = varSignature.substring(1).substring(0, varSignature.length() - 2);
+                     toAdd = Bytecode.reverseAdjustSystemClassName(toAdd);
+                     toConvertClasses.add(toAdd);
+                  }
                }
             }
          }
@@ -431,7 +441,9 @@ public class Bytecode2JsConverter
 
    private static String adjustSystemClassName(String binaryName)
    {
-      if (binaryName.startsWith("java/") || binaryName.startsWith("javax/"))
+      if (binaryName.startsWith("java/")
+          || binaryName.startsWith("javax/")
+          || binaryName.startsWith("org/w3c/dom/"))
       {
          return "bz/davide/dmjsjvm/system/" + binaryName;
       }
