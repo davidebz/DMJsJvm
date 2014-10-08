@@ -40,4 +40,13 @@ public class String
 
    @NativeJavascriptCode(src = "var val = this.value.toLowerCase() === arguments[0].value.toLowerCase() ; return val")
    public native boolean equalsIgnoreCase(java.lang.String str2);
+
+   @NativeJavascriptCode(src = "var val = this.value.indexOf(arguments[0].value) === 0 ;\n return val;")
+   public native boolean startsWith(String prefix);
+
+   @NativeJavascriptCode(src = "var val = this.value.length ;\n return val;")
+   public native int length();
+
+   @NativeJavascriptCode(src = "var obj = Class_forName('java/lang/String')['newInstance()Ljava/lang/Object;'](); obj.value =  this.value.substring(arguments[0]) ;\n return obj;")
+   public native java.lang.String substring(int index);
 }

@@ -77,7 +77,7 @@ bz_davide_JVM = new function()
 		   }},
 		   'getName()Ljava/lang/String;' : { code: function() {
 			   var s = Class_forName('java/lang/String')['newInstance()Ljava/lang/Object;']()
-			   s.value = this.__className;
+			   s.value = this.name.replace(new RegExp('/', 'g'), '.');;
 			   return s
 		   }},
 		   // TODO implements method
