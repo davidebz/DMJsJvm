@@ -22,9 +22,14 @@ package bz.davide.dmjsjvm_demo;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
+import bz.davide.dmjsjvm.xml.DOMParser;
 
-public class HelloWorld
+public class HelloXml
 {
    public static void main(String[] args)
                                          throws UnsupportedEncodingException,
@@ -32,7 +37,14 @@ public class HelloWorld
                                          SAXException,
                                          IOException
    {
-      System.out.println("Hello World!");
-      HelloXml.main(args);
+      String xml = "<doc date=\"2014-10-02\">DMJsJvm is <b>great</b>!</doc>";
+      Document doc = DOMParser.parse(xml);
+      Element docElement = doc.getDocumentElement();
+      System.out.println(docElement.getTagName());
+      String dateAttribute = docElement.getAttribute("date");
+      System.out.println(dateAttribute);
+      NodeList childs = docElement.getChildNodes();
+      Text text1 = (Text) childs.item(0);
+      System.out.println(text1.getNodeValue());
    }
 }
